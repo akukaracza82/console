@@ -1,5 +1,5 @@
 module Helium
-  module Console
+  class Console
     module Formatters
       class Indent
         def initialize(indent)

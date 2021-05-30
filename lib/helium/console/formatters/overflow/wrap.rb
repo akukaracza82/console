@@ -1,5 +1,5 @@
 module Helium
-  module Console
+  class Console
     module Formatters
       module Overflow
         class Wrap
