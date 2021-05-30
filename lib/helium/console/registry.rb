@@ -7,10 +7,14 @@ module Helium
           @options = options
         end
 
-        attr_reader :object
+        attr_reader :object, :options
 
         def format(object, **options)
           Helium::Console.format(object, **options)
+        end
+
+        def format_string(string, **options)
+          Helium::Console.format_string(string, **options)
         end
 
         def method_missing(name, *args)

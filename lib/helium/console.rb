@@ -4,6 +4,7 @@ require "helium/console/formatters/indent"
 require "helium/console/formatters/overflow"
 require "helium/console/formatters/max_lines"
 require "helium/console/inspectable"
+require "helium/console/table"
 require "helium/console/registry"
 require "terminfo"
 
@@ -22,6 +23,10 @@ module Helium
 
       def format(object, **options)
         instance.format(object, **options)
+      end
+
+      def format_string(string, **options)
+        instance.format_string(string, **options)
       end
 
       def define_formatter_for(klass, &block)
@@ -59,6 +64,24 @@ module Helium
         max_lines: nil,
         max_width: TermInfo.screen_width
       }
+    end
+
+    def format_string(string, ellipses: "...", **options)
+      options = default_options.merge(options)
+
+      formatters = [
+        Formatters::Overflow.get(options[:overflow]).new(max_width: options[:max_width] - options[:indent]),
+        Formatters::Indent.new(options[:indent]),
+        Formatters::MaxLines.new(
+          max_lines: options[:max_lines],
+          max_width: options[:max_width],
+          ellipses: ellipses
+        )
+      ]
+
+      formatters.inject(string) do |string, formatter|
+        formatter.call(string)
+      end
     end
 
   private
