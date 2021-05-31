@@ -62,7 +62,8 @@ module Helium
         overflow: :wrap,
         indent: 0,
         max_lines: nil,
-        max_width: TermInfo.screen_width
+        max_width: TermInfo.screen_width,
+        nesting: 3
       }
     end
 

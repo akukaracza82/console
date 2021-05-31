@@ -21,7 +21,7 @@ module Helium
         object.rows.flat_map do |key, value|
           formatted_value = format(value, max_width: (max_width - key_width - indent - 4))
           formatted_value.lines.map.with_index do |line, index|
-            "#{" " * indent}#{object.runner}#{index.zero? ? key.to_s.rjust(key_width) + ':' : " " * key_width} #{line.chomp}"
+            "#{" " * indent}#{object.runner}#{index.zero? ? key.to_s.rjust(key_width) + ':' : " " * (key_width + 1)} #{line.chomp}"
           end
         end
       end

@@ -10,7 +10,7 @@ module Helium
         attr_reader :object, :options
 
         def format(object, **options)
-          Helium::Console.format(object, **options)
+          Helium::Console.format(object, **nested_opts(options))
         end
 
         def format_string(string, **options)
@@ -20,6 +20,10 @@ module Helium
         def method_missing(name, *args)
           return @options[name] if @options.key?(name)
           super
+        end
+
+        def nested_opts(options)
+          { nesting: @options[:nesting] - 1 }.merge(options)
         end
       end
 
