@@ -9,14 +9,14 @@ module Helium
     private
 
       def format_as_table
-        table = Table.new(runner: nil)
+        table = Table.new(runner: '. ', format_keys: false)
         object.each.with_index do |element, index|
-          table.row("[#{index}]", element)
+          table.row("[#{index}]:", element)
         end
 
         [
           "[",
-          format(table, options.merge(indent: 2)),
+          format(table, **options),
           "]"
         ].join($/)
       end
@@ -38,8 +38,12 @@ module Helium
           trunc = new_trunc
         end
 
-        joined = [" ", joined, trunc, " "].compact.join if joined
-        ["[", joined, "]"].compact.join
+        if joined
+          joined = [" ", joined, trunc, " "].compact.join if joined
+          ["[", joined, "]"].compact.join
+        else
+          "[...(#{object.length})]"
+        end
       end
 
       def format_inline_with_no_truncation

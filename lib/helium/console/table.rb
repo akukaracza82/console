@@ -2,23 +2,16 @@ module Helium
   class Console
     class Table
 
-      def initialize(runner: "|", header_mark: "#")
+      def initialize(runner: "|", after_key: " ", format_keys: true)
         @runner = runner
-        @header_mark = header_mark
+        @after_key = after_key
+        @format_keys = format_keys
       end
 
-      attr_reader :runner, :header_mark
-
-      def title(title)
-        titles << title
-      end
+      attr_reader :runner, :after_key, :format_keys
 
       def row(key, value)
         rows << [key, value]
-      end
-
-      def titles
-        @titles ||= []
       end
 
       def rows
