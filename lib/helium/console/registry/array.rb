@@ -9,7 +9,7 @@ module Helium
     private
 
       def format_as_table
-        table = Table.new(runner: '. ', format_keys: false)
+        table = Table.new(runner: '  ', format_keys: false)
         object.each.with_index do |element, index|
           table.row("[#{index}]:", element)
         end

@@ -34,7 +34,6 @@ module Helium
       end
 
       def define(klass, &block)
-        klass.prepend(Inspectable)
         handlers[klass] = Class.new(Element, &block)
       end
 

@@ -1,12 +1,14 @@
-require "helium/console/version"
+require "pry"
 
+require "helium/console/version"
 require "helium/console/formatters/indent"
 require "helium/console/formatters/overflow"
 require "helium/console/formatters/max_lines"
-require "helium/console/inspectable"
 require "helium/console/table"
 require "helium/console/registry"
 require "terminfo"
+
+require "helium/console/printer"
 
 module Helium
   class Console

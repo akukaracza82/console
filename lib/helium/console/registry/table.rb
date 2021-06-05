@@ -6,7 +6,6 @@ module Helium
       end
 
       def formatted_values
-        puts key_width
         object.rows.flat_map do |key, value|
           formatted_value = format(value, max_width: max_value_width)
 
@@ -24,7 +23,7 @@ module Helium
       end
 
       def max_value_width
-        max_width - object.runner.length - object.after_key.length
+        max_width - object.runner.length - key_width - object.after_key.length
       end
 
       def format_key(key)
