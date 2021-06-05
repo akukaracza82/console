@@ -6,7 +6,6 @@ require "helium/console/formatters/overflow"
 require "helium/console/formatters/max_lines"
 require "helium/console/table"
 require "helium/console/registry"
-require "terminfo"
 
 require "helium/console/printer"
 
@@ -66,7 +65,7 @@ module Helium
         overflow: :wrap,
         indent: 0,
         max_lines: nil,
-        max_width: TermInfo.screen_width,
+        max_width: `tput cols`.chomp.to_i,
         level: 1
       }
     end

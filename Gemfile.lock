@@ -3,7 +3,6 @@ PATH
   specs:
     helium-console (0.1.0)
       pry
-      ruby-terminfo
 
 GEM
   remote: https://rubygems.org/
@@ -30,7 +29,6 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    ruby-terminfo (0.1.1)
 
 PLATFORMS
   ruby
