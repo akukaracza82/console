@@ -13,8 +13,11 @@ module Helium
 
       def max_lines
         return options[:max_lines] if options[:max_lines]
-        return if nesting == 3
-        [nesting, 1].max
+        case level
+        when 1 then nil
+        when 2 then 3
+        else 1
+        end
       end
     end
   end

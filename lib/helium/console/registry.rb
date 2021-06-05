@@ -23,7 +23,7 @@ module Helium
         end
 
         def nested_opts(options)
-          { nesting: @options[:nesting] - 1 }.merge(options)
+          { level: @options[:level] + 1 }.merge(options)
         end
       end
 

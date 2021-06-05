@@ -9,7 +9,7 @@ module Helium
     private
 
       def format_as_table
-        table = Table.new(runner: '. ', after_key: all_symbol? ? ": " : " => ", format_keys: !all_symbol?)
+        table = Table.new(runner: '  ', after_key: all_symbol? ? ": " : " => ", format_keys: !all_symbol?)
         object.each do |key, value|
           key = key.to_s if all_symbol?
           table.row(key, value)
@@ -69,7 +69,7 @@ module Helium
       end
 
       def force_inline?
-        (max_lines && max_lines < 5) || nesting < 2
+        (max_lines && max_lines < 5) || level > 2
       end
 
       def all_symbol?

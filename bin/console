@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 
 require "bundler/setup"
-require 'byebug'
 require "helium/console"
+
+require 'byebug'
+require 'ffaker'
 
 Pry.start

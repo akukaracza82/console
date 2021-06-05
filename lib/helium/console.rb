@@ -65,7 +65,7 @@ module Helium
         indent: 0,
         max_lines: nil,
         max_width: TermInfo.screen_width,
-        nesting: 3
+        level: 1
       }
     end
 

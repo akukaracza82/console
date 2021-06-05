@@ -66,7 +66,7 @@ module Helium
       end
 
       def force_inline?
-        (max_lines && max_lines < 5) || nesting < 2
+        level > 2
       end
     end
   end
