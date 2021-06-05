@@ -17,6 +17,10 @@ module Helium
           Helium::Console.format_string(string, **options)
         end
 
+        def simple?(object)
+          Helium::Console.simple?(object)
+        end
+
         def method_missing(name, *args)
           return @options[name] if @options.key?(name)
           super

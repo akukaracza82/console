@@ -48,13 +48,9 @@ module Helium
 
       def format_inline_with_no_truncation
         joined = nil
-        one_complex = false
 
         object.each do |element|
-          if element.inspect.lines.count > 1
-            return if one_complex
-            one_complex = true
-          end
+          return unless simple?(element)
 
           formatted = format(element)
           joined = [joined, formatted].compact.join(" | ")

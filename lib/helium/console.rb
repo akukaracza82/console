@@ -14,25 +14,23 @@ module Helium
   class Console
     Error = Class.new(StandardError)
 
+    SIMPLE_OBJECTS = [
+      Numeric,
+      NilClass,
+      FalseClass,
+      TrueClass,
+      Symbol
+    ]
+
     class << self
       def instance
         @instance ||= new(registry: Registry.new)
       end
 
-      def register(klass, &handler)
-        instance.register(klass, &handler)
-      end
+      def method_missing(name, *args, &block)
+        super unless instance.respond_to?(name)
 
-      def format(object, **options)
-        instance.format(object, **options)
-      end
-
-      def format_string(string, **options)
-        instance.format_string(string, **options)
-      end
-
-      def define_formatter_for(klass, &block)
-        instance.define_formatter_for(klass, &block)
+        instance.public_send(name, *args, &block)
       end
     end
 
@@ -57,6 +55,10 @@ module Helium
 
     def define_formatter_for(klass, &handler)
       registry.define(klass, &handler)
+    end
+
+    def simple?(object)
+      SIMPLE_OBJECTS.any? {|simple_obj_class| object.is_a? simple_obj_class }
     end
 
     def default_options

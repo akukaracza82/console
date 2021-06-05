@@ -51,10 +51,7 @@ module Helium
         one_complex = false
 
         object.each do |key, value|
-          if value.inspect.lines.count > 1
-            return if one_complex
-            one_complex = true
-          end
+          return unless simple?(value)
 
           formatted_key = format(key, max_lines: 1, nesting: 1, max_with: 15)
           formatted_value = format(value, max_lines: 1, nesting: 1, max_width: 15)
