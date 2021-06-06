@@ -2,7 +2,9 @@ module Helium
   class Console
     define_formatter_for Array do
       def call
+        return "[]" if object.none
         return format_inline_with_truncation if force_inline?
+        
         format_inline_with_no_truncation || format_as_table
       end
 
