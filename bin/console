@@ -6,4 +6,10 @@ require "helium/console"
 require 'byebug'
 require 'ffaker'
 
+class A
+  def initialize(a)
+    @a = a
+  end
+end
+
 Pry.start
