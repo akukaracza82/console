@@ -9,9 +9,9 @@ module Helium
     private
 
       def format_as_table
-        table = Table.new(runner: '  ', after_key: all_symbol? ? ": " : " => ", format_keys: !all_symbol?)
+        table = Table.new(runner: '  ', after_key: after_key, format_keys: !all_symbol?)
         object.each do |key, value|
-          key = key.to_s if all_symbol?
+          key = light_blue(key.to_s) if all_symbol?
           table.row(key, value)
         end
 
@@ -71,6 +71,10 @@ module Helium
 
       def all_symbol?
         object.keys.all? { |key| key.is_a? Symbol }
+      end
+
+      def after_key
+        all_symbol? ? light_blue(": ") : light_black(" => ")
       end
     end
   end

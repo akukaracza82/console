@@ -13,7 +13,7 @@ module Helium
             [
               object.runner,
               index.zero? ? format_key(key).rjust(key_width) : " " * key_width,
-              index.zero? ? object.after_key : " " * object.after_key.length,
+              index.zero? ? object.after_key : " " * length_of(object.after_key),
               line.chomp,
             ].join
           end
@@ -24,16 +24,25 @@ module Helium
         @key_width ||= object.rows
           .map(&:first)
           .map(&method(:format_key))
-          .map(&:length).max
+          .map(&method(:length_of))
+          .max
       end
 
       def max_value_width
-        max_width - object.runner.length - key_width - object.after_key.length
+        max_width - length_of(object.runner) - key_width - length_of(object.after_key)
       end
 
       def format_key(key)
         return key unless object.format_keys
         format(key, max_width: 15, level: 3)
+      end
+
+      def length_of(string)
+        if string.respond_to?(:uncolorize)
+          string.uncolorize.length
+        else
+          string.length
+        end
       end
     end
   end

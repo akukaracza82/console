@@ -1,3 +1,5 @@
+require 'colorized_string'
+
 module Helium
   class Console
     class Registry
@@ -31,6 +33,9 @@ module Helium
 
         def method_missing(name, *args)
           return @options[name] if @options.key?(name)
+          if ColorizedString.colors.include?(name)
+            return ColorizedString.new(*args).colorize(name)
+          end
           super
         end
 

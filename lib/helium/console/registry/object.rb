@@ -9,14 +9,14 @@ module Helium
     private
 
       def format_as_table
-        table = Table.new(runner: '| ', after_key: ": ", format_keys: false)
+        table = Table.new(runner: light_black('| '), after_key: light_black(": "), format_keys: false)
 
         object.instance_variables.each do |inst|
-          table.row(inst.to_s, object.instance_variable_get(inst))
+          table.row(magenta(inst.to_s), object.instance_variable_get(inst))
         end
 
         [
-          "# #{object.class.name} instance",
+          "#{light_black('#')} #{light_yellow(object.class.name)} instance",
           format(table, **options),
         ].join($/)
       end
