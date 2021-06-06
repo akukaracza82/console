@@ -7,7 +7,7 @@ module Helium
 
       def formatted_values
         object.rows.flat_map do |key, value|
-          formatted_value = format(value, max_width: max_value_width)
+          formatted_value = format_nested(value, max_width: max_value_width)
 
           formatted_value.lines.map.with_index do |line, index|
             [

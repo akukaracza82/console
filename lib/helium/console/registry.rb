@@ -9,8 +9,12 @@ module Helium
 
         attr_reader :object, :options
 
-        def format(object, **options)
-          Helium::Console.format(object, **nested_opts(options))
+        def format_nested(other_object, **options)
+          Helium::Console.format(other_object, **nested_opts(options))
+        end
+
+        def format(other_object, **options)
+          Helium::Console.format(other_object, **nested_opts(options, increase_level: false))
         end
 
         def format_string(string, **options)
@@ -21,13 +25,20 @@ module Helium
           Helium::Console.simple?(object)
         end
 
+        def is_simple
+          false
+        end
+
         def method_missing(name, *args)
           return @options[name] if @options.key?(name)
           super
         end
 
-        def nested_opts(options)
-          { level: @options[:level] + 1 }.merge(options)
+        def nested_opts(new_options, increase_level: true)
+          new_options = options.merge(new_options)
+          new_options[:level] += 1 if increase_level
+          new_options[:ignore_objects] << object.object_id
+          new_options
         end
       end
 

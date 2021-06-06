@@ -39,6 +39,8 @@ module Helium
 
     def format(object, **options)
       options = default_options.merge(options)
+      return "(...)" if options[:ignore_objects].include?(object.object_id)
+
       handler = registry.handler_for(object, **options)
 
       if handler
@@ -57,7 +59,8 @@ module Helium
     end
 
     def simple?(object)
-      SIMPLE_OBJECTS.any? {|simple_obj_class| object.is_a? simple_obj_class }
+      SIMPLE_OBJECTS.any? {|simple_obj_class| object.is_a? simple_obj_class } ||
+        registry.handler_for(object).is_simple
     end
 
     def default_options
@@ -66,7 +69,8 @@ module Helium
         indent: 0,
         max_lines: nil,
         max_width: `tput cols`.chomp.to_i,
-        level: 1
+        level: 1,
+        ignore_objects: [],
       }
     end
 

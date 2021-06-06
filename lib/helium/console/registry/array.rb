@@ -6,6 +6,10 @@ module Helium
         format_inline_with_no_truncation || format_as_table
       end
 
+      def is_simple
+        object.none?
+      end
+
     private
 
       def format_as_table
@@ -16,7 +20,7 @@ module Helium
 
         [
           "[",
-          format(table, **options),
+          format(table),
           "]"
         ].join($/)
       end
@@ -27,7 +31,7 @@ module Helium
         total = object.length
 
         object.each.with_index do |element, index|
-          formatted = format(element, max_lines: 1, nesting: 1, max_width: 15)
+          formatted = format_nested(element, max_lines: 1, nesting: 1, max_width: 15)
 
           new_joined = [joined, formatted].compact.join(" | ")
           new_trunc = (" | (#{total - index - 1} #{index.zero? ? 'elements' : 'more'})" unless index == total - 1)
@@ -52,7 +56,7 @@ module Helium
         object.each do |element|
           return unless simple?(element)
 
-          formatted = format(element)
+          formatted = format_nested(element)
           joined = [joined, formatted].compact.join(" | ")
 
           return if joined.length > max_width - 4
