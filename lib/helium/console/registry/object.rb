@@ -16,9 +16,9 @@ module Helium
         end
 
         [
-          "#{light_black('#')} #{light_yellow(object.class.name)} instance",
-          format(table, **options),
-        ].join($/)
+          table_header,
+          format(table),
+        ].reject(&:empty?).join($/)
       end
 
       def format_inline_with_truncation
@@ -27,13 +27,12 @@ module Helium
 
       def format_inline_with_no_truncation
         joined = nil
-        one_complex = false
 
         object.each do |key, value|
           return unless simple?(value)
 
-          formatted_key = format(key, max_lines: 1, nesting: 1, max_with: 15)
-          formatted_value = format(value, max_lines: 1, nesting: 1, max_width: 15)
+          formatted_key = format(key, level: 3, max_with: 15)
+          formatted_value = format(value, level: 3, max_width: 15)
           formatted = "#{formatted_key} => #{formatted_value}"
 
           joined = [joined, formatted].compact.join(", ")
@@ -44,8 +43,17 @@ module Helium
         ["{", joined, "}"].compact.join
       end
 
+      def table_header
+        type = case object
+          when Class then :class
+          when Module then :module
+          else :instance
+        end
+        "#{light_black('#')} #{light_yellow(type == :instance ? object.class.name : object.name)} #{type}"
+      end
+
       def force_inline?
-        (max_lines && max_lines < 5) || level > 2
+        level > 2
       end
 
       def all_symbol?
