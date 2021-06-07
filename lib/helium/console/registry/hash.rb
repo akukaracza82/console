@@ -66,7 +66,7 @@ module Helium
       end
 
       def force_inline?
-        (max_lines && max_lines < 5) || level > 2
+        level > 2
       end
 
       def all_symbol?

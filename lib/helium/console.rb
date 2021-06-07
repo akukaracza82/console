@@ -67,7 +67,6 @@ module Helium
       {
         overflow: :wrap,
         indent: 0,
-        max_lines: nil,
         max_width: `tput cols`.chomp.to_i,
         level: 1,
         ignore_objects: [],
