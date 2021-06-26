@@ -49,7 +49,13 @@ module Helium
           when Module then :module
           else :instance
         end
-        "#{light_black('#')} #{light_yellow(type == :instance ? object.class.name : object.name)} #{type}"
+        klass = type == :instance ? object.class : object
+        klass_name = klass.name
+        if !klass_name
+          named_ancestor = klass.ancestors.find(&:name)
+          klass_name = ['anonymous', named_ancestor&.name].compact.join(" ")
+        end
+        "#{light_black('#')} #{light_yellow(klass_name)} #{type}"
       end
 
       def force_inline?

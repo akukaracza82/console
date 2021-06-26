@@ -9,7 +9,7 @@ module Helium
 
       def anonymus_text
         closest = object.ancestors.find(&:name).name
-        "(ananymus #{closest})"
+        "(anonymous #{closest})"
       end
     end
   end
