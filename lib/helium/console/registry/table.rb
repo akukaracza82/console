@@ -9,8 +9,8 @@ module Helium
       end
 
       def formatted_values
-        rows.flat_map do |key, value|
-          formatted_value = format_nested(value, max_width: max_value_width)
+        rows.flat_map do |key, value, options = {}|
+          formatted_value = format_nested(value, max_width: max_value_width, **options)
 
           formatted_value.lines.map.with_index do |line, index|
             [

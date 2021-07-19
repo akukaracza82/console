@@ -10,8 +10,8 @@ module Helium
 
       attr_reader :runner, :after_key, :format_keys
 
-      def row(key, value)
-        rows << [key, value]
+      def row(key, value, **options)
+        rows << [key, value, options]
       end
 
       def rows
