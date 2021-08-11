@@ -28,7 +28,7 @@ RSpec.describe Helium::Console do
       let(:handler) { double "object format handler", call: result }
 
       before do
-        allow(registry).to receive(:handler_for).with(object).and_return(handler)
+        allow(registry).to receive(:handler_for).with(object, instance_of(Hash)).and_return(handler)
       end
 
       it "returns the result of formatting handler" do
@@ -41,7 +41,7 @@ RSpec.describe Helium::Console do
       let(:formatted_object_inspect) { double "Formatted object's inspect" }
 
       before do
-        allow(registry).to receive(:handler_for).with(object).and_return nil
+        allow(registry).to receive(:handler_for).with(object, instance_of(Hash)).and_return nil
         allow(subject).to receive(:format).and_call_original
         allow(subject).to receive(:format).with(object.inspect, **subject.default_options)
           .and_return formatted_object_inspect

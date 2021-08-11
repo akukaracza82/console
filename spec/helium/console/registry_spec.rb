@@ -6,6 +6,7 @@ RSpec.describe Helium::Console::Registry do
   let(:handler_result) { double "Handler result" }
 
   before do
+    handler = self.handler
     subject.add(test_class) { |*args| handler.(*args) }
   end
 
