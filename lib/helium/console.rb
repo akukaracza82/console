@@ -33,6 +33,10 @@ module Helium
 
         instance.public_send(name, *args, &block)
       end
+
+      def respond_to_missing?(name, private = false)
+        instance.respond_to?(name) || super
+      end
     end
 
     def initialize(registry:)
@@ -88,8 +92,8 @@ module Helium
         )
       ]
 
-      formatters.inject(string) do |string, formatter|
-        formatter.(string)
+      formatters.inject(string) do |str, formatter|
+        formatter.(str)
       end
     end
 

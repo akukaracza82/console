@@ -1,4 +1,6 @@
-require: rubocop-rspec
+require:
+  - rubocop-rspec
+  - rubocop-rake
 
 AllCops:
   NewCops: enable
@@ -42,5 +44,19 @@ Style/Documentation:
 
 Bundler/OrderedGems:
   Enabled: false
+
+Style/EmptyMethod:
+  EnforcedStyle: expanded
+
+Metrics/BlockLength:
+  IgnoredMethods:
+    - define_formatter_for
+  Exclude:
+    - "*.gemspec"
+    - "spec/**/*_spec.rb"
+
+
+Metrics/MethodLength:
+  Max: 15
 
 

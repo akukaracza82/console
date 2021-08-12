@@ -51,10 +51,9 @@ module Helium
 
       def format_inline_with_no_truncation
         joined = nil
-        one_complex = false
 
         object.each do |key, value|
-          return unless simple?(value)
+          return unless Helium::Console.simple?(value)
 
           formatted_key = format(key, max_lines: 1, nesting: 1, max_with: 15)
           formatted_value = format(value, max_lines: 1, nesting: 1, max_width: 15)

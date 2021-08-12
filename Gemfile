@@ -9,5 +9,6 @@ gem 'rake', '~> 12.0'
 gem 'rspec', '~> 3.0'
 gem 'ffaker'
 gem 'byebug'
-gem 'rubocop'
-gem 'rubocop-rspec'
+gem 'rubocop', require: false
+gem 'rubocop-rspec', require: false
+gem 'rubocop-rake', require: false

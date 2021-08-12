@@ -10,7 +10,7 @@ module Helium
         format_inline_with_no_truncation || format_as_table
       end
 
-      def is_simple
+      def simple?
         object.none?
       end
 
@@ -58,15 +58,15 @@ module Helium
         joined = nil
 
         object.each do |element|
-          return unless simple?(element)
+          return unless Helium::Console.simple?(element)
 
           formatted = format_nested(element)
           joined = [joined, formatted].compact.join(' | ')
 
           return if joined.length > max_width - 4
         end
-        joined = " #{joined} " if joined
-        ['[', joined, ']'].compact.join
+
+        ['[', joined, ']'].compact.join(' ')
       end
 
       def force_inline?

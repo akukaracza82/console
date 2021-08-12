@@ -11,6 +11,9 @@ module Helium
           @options = options
         end
 
+        def call
+        end
+
         attr_reader :object, :options
 
         def format_nested(other_object, **options)
@@ -25,11 +28,7 @@ module Helium
           Helium::Console.format_string(string, **options)
         end
 
-        def simple?(object)
-          Helium::Console.simple?(object)
-        end
-
-        def is_simple
+        def simple?
           false
         end
 
