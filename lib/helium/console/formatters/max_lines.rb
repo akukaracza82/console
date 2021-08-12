@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Helium
   class Console
     module Formatters
       class MaxLines
-        ELLIPSES = "...\""
+        ELLIPSES = '..."'
 
         def initialize(max_lines:, max_width:, ellipses:)
           @max_lines = max_lines
@@ -16,7 +18,7 @@ module Helium
           lines = string.lines.first(@max_lines)
           last_line = lines.pop
           lines << last_line.chars.first(@max_width - @ellipses.length).join + @ellipses
-          lines.join()
+          lines.join
         end
       end
     end

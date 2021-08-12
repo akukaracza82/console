@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Helium
   class Console
     define_formatter_for String do
@@ -7,7 +9,7 @@ module Helium
           max_width: max_width,
           max_lines: max_lines,
           overflow: overflow,
-          ellipses: "...\""
+          ellipses: '..."'
         )
 
         formatted.lines
@@ -17,9 +19,9 @@ module Helium
 
       def max_lines
         case level
-        when 1 then nil
-        when 2 then 3
-        else 1
+          when 1 then nil
+          when 2 then 3
+          else 1
         end
       end
     end

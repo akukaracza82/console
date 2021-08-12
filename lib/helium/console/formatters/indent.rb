@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Helium
   class Console
     module Formatters
@@ -7,7 +9,7 @@ module Helium
         end
 
         def call(string)
-          string.lines.map {|line| ' ' * @indent + line }.join
+          string.lines.map { |line| ' ' * @indent + line }.join
         end
       end
     end

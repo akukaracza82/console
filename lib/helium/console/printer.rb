@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Helium
   class Console
     class ColorPrinter < Pry::ColorPrinter
@@ -10,11 +12,11 @@ module Helium
 
       def pp(object)
         formatted = Helium::Console.format(object)
-        formatted = $/ + formatted if formatted.lines.count > 1
+        formatted = "\n#{formatted}" if formatted.lines.count > 1
         output << formatted
       end
 
-      ::Pry.config.print = self.method(:default)
+      ::Pry.config.print = method(:default)
     end
   end
 end

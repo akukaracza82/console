@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'colorized_string'
 
 module Helium
@@ -33,10 +35,13 @@ module Helium
 
         def method_missing(name, *args)
           return @options[name] if @options.key?(name)
-          if ColorizedString.colors.include?(name)
-            return ColorizedString.new(*args).colorize(name)
-          end
+          return ColorizedString.new(*args).colorize(name) if ColorizedString.colors.include?(name)
+
           super
+        end
+
+        def respond_to_missing?(name, private = false)
+          @options.key?(name) || ColorizedString.colors.include?(name) || super
         end
 
         def nested_opts(new_options, increase_level: true)
@@ -64,7 +69,7 @@ module Helium
         nil
       end
 
-    private
+      private
 
       def handlers
         @handlers ||= {}

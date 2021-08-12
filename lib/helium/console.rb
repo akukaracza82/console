@@ -1,13 +1,15 @@
-require "pry"
+# frozen_string_literal: true
 
-require "helium/console/version"
-require "helium/console/formatters/indent"
-require "helium/console/formatters/overflow"
-require "helium/console/formatters/max_lines"
-require "helium/console/table"
-require "helium/console/registry"
+require 'pry'
 
-require "helium/console/printer"
+require 'helium/console/version'
+require 'helium/console/formatters/indent'
+require 'helium/console/formatters/overflow'
+require 'helium/console/formatters/max_lines'
+require 'helium/console/table'
+require 'helium/console/registry'
+
+require 'helium/console/printer'
 
 module Helium
   class Console
@@ -19,7 +21,7 @@ module Helium
       FalseClass,
       TrueClass,
       Symbol
-    ]
+    ].freeze
 
     class << self
       def instance
@@ -39,12 +41,12 @@ module Helium
 
     def format(object, **options)
       options = default_options.merge(options)
-      return "(...)" if options[:ignore_objects].include?(object.object_id)
+      return '(...)' if options[:ignore_objects].include?(object.object_id)
 
       handler = registry.handler_for(object, **options)
 
       if handler
-        handler.call
+        handler.()
       else
         format(object.inspect, **options)
       end
@@ -59,7 +61,7 @@ module Helium
     end
 
     def simple?(object)
-      SIMPLE_OBJECTS.any? {|simple_obj_class| object.is_a? simple_obj_class } ||
+      SIMPLE_OBJECTS.any? { |simple_obj_class| object.is_a? simple_obj_class } ||
         registry.handler_for(object).is_simple
     end
 
@@ -69,11 +71,11 @@ module Helium
         indent: 0,
         max_width: `tput cols`.chomp.to_i,
         level: 1,
-        ignore_objects: [],
+        ignore_objects: []
       }
     end
 
-    def format_string(string, ellipses: "...", **options)
+    def format_string(string, ellipses: '...', **options)
       options = default_options.merge(options)
 
       formatters = [
@@ -87,16 +89,16 @@ module Helium
       ]
 
       formatters.inject(string) do |string, formatter|
-        formatter.call(string)
+        formatter.(string)
       end
     end
 
-  private
+    private
 
     attr_reader :registry
   end
 end
 
-Dir.glob(File.join(File.dirname(__FILE__), "console", "registry", "**/*.rb")).each do |file|
+Dir.glob(File.join(File.dirname(__FILE__), 'console', 'registry', '**/*.rb')).sort.each do |file|
   require file
 end

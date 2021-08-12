@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module Helium
   class Console
     define_formatter_for Array do
       def call
-        return "[]" if object.none?
+        return '[]' if object.none?
         return format_inline_with_truncation if force_inline?
 
         format_inline_with_no_truncation || format_as_table
@@ -12,7 +14,7 @@ module Helium
         object.none?
       end
 
-    private
+      private
 
       def format_as_table
         table = Table.new(runner: '  ', format_keys: false)
@@ -21,10 +23,10 @@ module Helium
         end
 
         [
-          "[",
+          '[',
           format(table),
-          "]"
-        ].join($/)
+          ']'
+        ].join("\n")
       end
 
       def format_inline_with_truncation
@@ -35,7 +37,7 @@ module Helium
         object.each.with_index do |element, index|
           formatted = format_nested(element, max_lines: 1, nesting: 1, max_width: 15)
 
-          new_joined = [joined, formatted].compact.join(" | ")
+          new_joined = [joined, formatted].compact.join(' | ')
           new_trunc = (" | (#{total - index - 1} #{index.zero? ? 'elements' : 'more'})" unless index == total - 1)
 
           break if new_joined.length > max_width - (new_trunc&.length || 0) - 4
@@ -45,8 +47,8 @@ module Helium
         end
 
         if joined
-          joined = [" ", joined, trunc, " "].compact.join if joined
-          ["[", joined, "]"].compact.join
+          joined = [' ', joined, trunc, ' '].compact.join if joined
+          ['[', joined, ']'].compact.join
         else
           "[...(#{object.length})]"
         end
@@ -59,12 +61,12 @@ module Helium
           return unless simple?(element)
 
           formatted = format_nested(element)
-          joined = [joined, formatted].compact.join(" | ")
+          joined = [joined, formatted].compact.join(' | ')
 
           return if joined.length > max_width - 4
         end
         joined = " #{joined} " if joined
-        ["[", joined, "]"].compact.join
+        ['[', joined, ']'].compact.join
       end
 
       def force_inline?
