@@ -49,6 +49,14 @@ module Helium
           new_options[:ignore_objects] << object.object_id
           new_options
         end
+
+        def length_of(string)
+          if string.respond_to?(:uncolorize)
+            string.uncolorize.length
+          else
+            string.length
+          end
+        end
       end
 
       def add(klass, &handler)
@@ -62,10 +70,12 @@ module Helium
       end
 
       def handler_for(object, **options)
-        object.class.ancestors.each do |ancestor|
-          return handlers[ancestor].new(object, **options) if handlers.key?(ancestor)
+        element_class = object.class.ancestors.find do |ancestor|
+          break handlers[ancestor] if handlers.key?(ancestor)
         end
-        nil
+        return unless element_class
+
+        element_class.new(object, **options)
       end
 
       private

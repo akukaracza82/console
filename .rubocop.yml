@@ -55,8 +55,10 @@ Metrics/BlockLength:
     - "*.gemspec"
     - "spec/**/*_spec.rb"
 
-
 Metrics/MethodLength:
   Max: 15
+
+RSpec/MultipleExpectations:
+  Enabled: false
 
 

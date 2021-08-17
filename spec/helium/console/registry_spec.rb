@@ -1,31 +1,26 @@
 # frozen_string_literal: true
 
 RSpec.describe Helium::Console::Registry do
+  subject(:registry) { described_class.new }
+
   let(:test_class) { Class.new }
   let(:object) { test_class.new }
-
-  let(:handler) { spy 'Test class handler', call: handler_result }
-  let(:handler_result) { double 'Handler result' }
+  let(:options) { { option_key: FFaker::Lorem.sentence } }
 
   before do
-    handler = self.handler
-    subject.add(test_class) { |*args| handler.(*args) }
+    registry.add(test_class) { option_key }
   end
 
   it 'allows class-based write and read of the handlers' do
-    stored_handler = subject.handler_for(object)
-    some_args = Array.new(2) { double }
+    stored_handler = registry.handler_for(object, **options)
 
-    expect(stored_handler.(*some_args)).to be handler_result
-    expect(handler).to have_received(:call).with(*some_args)
+    expect(stored_handler.()).to eq options[:option_key]
   end
 
   it 'finds the closest matching handler via object ancestry' do
     subclass = Class.new(test_class)
-    stored_handler = subject.handler_for(subclass.new)
-    some_args = Array.new(2) { double }
+    stored_handler = registry.handler_for(subclass.new, **options)
 
-    expect(stored_handler.(*some_args)).to be handler_result
-    expect(handler).to have_received(:call).with(*some_args)
+    expect(stored_handler.()).to be options[:option_key]
   end
 end

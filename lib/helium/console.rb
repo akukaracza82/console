@@ -66,7 +66,7 @@ module Helium
 
     def simple?(object)
       SIMPLE_OBJECTS.any? { |simple_obj_class| object.is_a? simple_obj_class } ||
-        registry.handler_for(object).is_simple
+        registry.handler_for(object).simple?
     end
 
     def default_options

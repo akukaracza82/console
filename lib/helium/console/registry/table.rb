@@ -54,14 +54,6 @@ module Helium
         ' ' * (width - length_of(string)) + string
       end
 
-      def length_of(string)
-        if string.respond_to?(:uncolorize)
-          string.uncolorize.length
-        else
-          string.length
-        end
-      end
-
       def rows
         @rows ||= case level
           when 1 then object.rows
