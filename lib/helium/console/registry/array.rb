@@ -37,7 +37,7 @@ module Helium
           new_joined
         end
 
-        "[ #{formatted.join(' | ')} ]"
+        "[ #{formatted.compact.join(' | ')} ]"
       end
 
       def inline_without_truncation

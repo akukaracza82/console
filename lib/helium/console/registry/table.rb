@@ -58,9 +58,9 @@ module Helium
         @rows ||= case level
           when 1 then object.rows
           when 2
-            object.rows.count < 10 ? object.rows : object.rows.first(9)
+            object.rows.count <= 10 ? object.rows : object.rows.first(9)
           else
-            object.rows.count < 3 ? object.rows : object.rows.first(2)
+            object.rows.count <= 3 ? object.rows : object.rows.first(2)
         end
       end
     end
