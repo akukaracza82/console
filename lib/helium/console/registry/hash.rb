@@ -4,9 +4,9 @@ module Helium
   class Console
     define_formatter_for Hash do
       def call
-        return format_inline_with_truncation if force_inline?
+        return inline_with_truncation if force_inline?
 
-        format_inline_with_no_truncation || format_as_table
+        inline_with_no_truncation || format_as_table
       end
 
       private
@@ -25,7 +25,7 @@ module Helium
         ].join("\n")
       end
 
-      def format_inline_with_truncation
+      def inline_with_truncation
         joined = nil
         trunc = nil
         total = object.length
@@ -49,7 +49,7 @@ module Helium
         ['{', joined, '}'].compact.join
       end
 
-      def format_inline_with_no_truncation
+      def inline_with_no_truncation
         joined = nil
 
         object.each do |key, value|

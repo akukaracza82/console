@@ -51,11 +51,7 @@ module Helium
         end
 
         def length_of(string)
-          if string.respond_to?(:uncolorize)
-            string.uncolorize.length
-          else
-            string.length
-          end
+          ColorizedString.new(string).uncolorize.length
         end
       end
 
