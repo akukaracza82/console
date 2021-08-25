@@ -4,9 +4,10 @@ module Helium
   class Console
     define_formatter_for Hash do
       def call
+        return '{}' if object.none?
         return inline_with_truncation if force_inline?
 
-        inline_with_no_truncation || format_as_table
+        inline_without_truncation || format_as_table
       end
 
       private
@@ -26,53 +27,58 @@ module Helium
       end
 
       def inline_with_truncation
-        joined = nil
-        trunc = nil
-        total = object.length
+        truncated = formatted_inline_elements.with_index.inject([]) do |collected, (formatted, index)|
+          new_collected = [*collected[0..-2], formatted, trunc_text(index + 1)].compact
+          break collected if new_collected.join(', ').length > max_width - 4
 
-        object.each.with_index do |(key, value), index|
-          formatted_key = format(key, max_lines: 1, nesting: 1, max_with: 15)
-          formatted_value = format(value, max_lines: 1, nesting: 1, max_width: 15)
-
-          formatted = "#{formatted_key} => #{formatted_value}"
-
-          new_joined = [joined, formatted].compact.join(', ')
-          new_trunc = (", (#{total - index - 1} #{index.zero? ? 'elements' : 'more'})" unless index == total - 1)
-
-          break if new_joined.length > max_width - (new_trunc&.length || 0) - 4
-
-          joined = new_joined
-          trunc = new_trunc
+          new_collected
         end
 
-        joined = [' ', joined, trunc, ' '].compact.join if joined
-        ['{', joined, '}'].compact.join
+        ['{ ', truncated.join(', '), ' }'].compact.join
       end
 
-      def inline_with_no_truncation
-        joined = nil
+      def inline_without_truncation
+        formatted = formatted_inline_elements.inject([]) do |collected, element|
+          collected << element
+          break if collected.join(', ').length > max_width - 4
 
-        object.each do |key, value|
-          return unless Helium::Console.simple?(value)
-
-          formatted_key = format(key, max_lines: 1, nesting: 1, max_with: 15)
-          formatted_value = format(value, max_lines: 1, nesting: 1, max_width: 15)
-          formatted = "#{formatted_key} => #{formatted_value}"
-
-          joined = [joined, formatted].compact.join(', ')
-
-          return if joined.length > max_width - 4
+          collected
         end
-        joined = " #{joined} " if joined
-        ['{', joined, '}'].compact.join
+
+        return if formatted.nil?
+
+        ['{ ', formatted.join(', '), ' }'].compact.join
       end
 
       def force_inline?
         level > 2
       end
 
+      def formatted_inline_elements
+        object.each.lazy.map do |key, value|
+          formatted_key = format_key(key, max_lines: 1, nesting: 1, max_with: 15)
+          formatted_value = format_nested(value, max_lines: 1, nesting: 1, max_width: 15)
+          [formatted_key, after_key, formatted_value].join
+        end
+      end
+
       def all_symbol?
         object.keys.all? { |key| key.is_a? Symbol }
+      end
+
+      def format_key(key, **options)
+        return light_blue(key.to_s) if all_symbol?
+
+        format_nested(key, **options)
+      end
+
+      def total_elements
+        @total_elements ||= object.length
+      end
+
+      def trunc_text(count)
+        truncated_elements = total_elements - count
+        light_black("(#{truncated_elements} #{count.zero? ? 'elements' : 'more'})")
       end
 
       def after_key

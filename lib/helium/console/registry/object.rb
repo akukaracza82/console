@@ -4,7 +4,7 @@ module Helium
   class Console
     define_formatter_for Object do
       def call
-        return format_inline_with_truncation if force_inline?
+        return inline_with_truncation if force_inline?
 
         format_as_table
       end
@@ -19,47 +19,42 @@ module Helium
         end
 
         [
-          table_header,
+          "#{light_black '#'} #{class_name}",
           format(table)
         ].reject(&:empty?).join("\n")
       end
 
-      def format_inline_with_truncation
-        "#{object.class.name}##{object.object_id.to_s(16)}"
+      def inline_with_truncation
+        class_name = class_name(short: true)
+
+        vars = formatted_instance_variables(max_width: 15, max_lines: 1).inject([]) do |collected, element|
+          new_collected = [*collected, element]
+          break collected if new_collected.join(', ').length > max_width - length_of(class_name) - 2
+
+          new_collected
+        end
+
+        formatted_vars = "( #{vars.join(', ')} )" if vars.any?
+        [class_name, formatted_vars].compact.join
       end
 
-      def format_inline_with_no_truncation
-        joined = nil
-
-        object.each do |key, value|
-          return unless simple?(value)
-
-          formatted_key = format(key, level: 3, max_with: 15)
-          formatted_value = format(value, level: 3, max_width: 15)
-          formatted = "#{formatted_key} => #{formatted_value}"
-
-          joined = [joined, formatted].compact.join(', ')
-
-          return if joined.length > max_width - 4
-        end
-        joined = " #{joined} " if joined
-        ['{', joined, '}'].compact.join
-      end
-
-      def table_header
-        type = case object
-          when Class then :class
-          when Module then :module
-          else :instance
-        end
-        klass = type == :instance ? object.class : object
-        klass_name = klass.name
-        unless klass_name
-          named_ancestor = klass.ancestors.find(&:name)
-          klass_name = ['anonymous', named_ancestor&.name].compact.join(' ')
-        end
-        "#{light_black('#')} #{light_yellow(klass_name)} #{type}"
-      end
+      # def inline_without_truncation
+      #   joined = nil
+      #
+      #   object.each do |key, value|
+      #     return unless simple?(value)
+      #
+      #     formatted_key = format(key, level: 3, max_with: 15)
+      #     formatted_value = format(value, level: 3, max_width: 15)
+      #     formatted = "#{formatted_key} => #{formatted_value}"
+      #
+      #     joined = [joined, formatted].compact.join(', ')
+      #
+      #     return if joined.length > max_width - 4
+      #   end
+      #   joined = " #{joined} " if joined
+      #   ['{', joined, '}'].compact.join
+      # end
 
       def force_inline?
         level > 2
@@ -67,6 +62,18 @@ module Helium
 
       def all_symbol?
         object.keys.all? { |key| key.is_a? Symbol }
+      end
+
+      def formatted_instance_variables(**options)
+        object.instance_variables.sort.each.lazy.map do |var_name|
+          value = object.instance_variable_get(var_name)
+          "#{magenta(var_name.to_s)} = #{format_nested(value, **options)}"
+        end
+      end
+
+      def class_name(short: false)
+        formatted = format(object.class, short: short)
+        short ? "##{formatted}" : "#{formatted} instance"
       end
     end
   end
