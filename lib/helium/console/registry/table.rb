@@ -59,7 +59,7 @@ module Helium
 
       def rows
         @rows ||= case level
-          when 1 then object.rows
+          when 1 then rows_limited_by(42)
           when 2 then rows_limited_by(10)
           else rows_limited_by(3)
         end
