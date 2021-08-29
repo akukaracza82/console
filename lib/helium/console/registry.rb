@@ -68,6 +68,7 @@ module Helium
       def handler_for(object, **options)
         element_class = object.class.ancestors.find do |ancestor|
           break handlers[ancestor] if handlers.key?(ancestor)
+          break handlers[ancestor.name] if handlers.key?(ancestor.name)
         end
         return unless element_class
 
