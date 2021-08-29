@@ -4,7 +4,7 @@ module Helium
   class Console
     define_formatter_for Time do
       def call
-        green object.strftime("%A, %d %b %Y, %H:%M:%S")
+        blue object.strftime('%A, %d %b %Y, %H:%M:%S')
       end
     end
   end

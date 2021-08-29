@@ -37,7 +37,7 @@ module Helium
           new_joined
         end
 
-        "#{light_magenta('Set: {')} #{formatted.join(light_magenta ' | ')} #{light_magenta('}')}" unless formatted.nil?
+        "#{light_magenta('Set: {')} #{formatted.join(light_magenta(' | '))} #{light_magenta('}')}"
       end
 
       def inline_without_truncation
@@ -50,7 +50,7 @@ module Helium
           joined
         end
 
-        "#{light_magenta('Set: {')} #{formatted.join(light_magenta ' | ')} #{light_magenta('}')}" unless formatted.nil?
+        "#{light_magenta('Set: {')} #{formatted.join(light_magenta(' | '))} #{light_magenta('}')}" unless formatted.nil?
       end
 
       def too_long?(object, max_width:)
