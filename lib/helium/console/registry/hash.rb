@@ -13,17 +13,17 @@ module Helium
       private
 
       def format_as_table
-        table = Table.new(runner: '  ', after_key: after_key, format_keys: !all_symbol?)
+        table = Table.new(runner: '  ', after_key: after_key, format_keys: true)
         object.each do |key, value|
           key = light_blue(key.to_s) if all_symbol?
           table.row(key, value)
         end
 
-        [
-          '{',
-          format(table, **options),
-          '}'
-        ].join("\n")
+        yield_lines do |y|
+          y << '{'
+          format(table).lines.each { |line| y << line }
+          y << '}'
+        end
       end
 
       def inline_with_truncation
@@ -63,7 +63,10 @@ module Helium
       end
 
       def all_symbol?
-        object.keys.all? { |key| key.is_a? Symbol }
+        return false
+        return @all_symbol if defined?(@all_symbol)
+
+        @all_symbol = object.keys.all? { |key| key.is_a? Symbol }
       end
 
       def format_key(key, **options)

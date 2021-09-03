@@ -18,10 +18,10 @@ module Helium
           table.row(magenta(inst.to_s), object.instance_variable_get(inst))
         end
 
-        [
-          "#{light_black '#'} #{class_name}",
-          format(table)
-        ].reject(&:empty?).join("\n")
+        yield_lines do |y|
+          y << "#{light_black '#'} #{class_name}"
+          format(table).lines.each {|line| y << line }
+        end
       end
 
       def inline_with_truncation
@@ -37,24 +37,6 @@ module Helium
         formatted_vars = "( #{vars.join(', ')} )" if vars.any?
         [class_name, formatted_vars].compact.join
       end
-
-      # def inline_without_truncation
-      #   joined = nil
-      #
-      #   object.each do |key, value|
-      #     return unless simple?(value)
-      #
-      #     formatted_key = format(key, level: 3, max_with: 15)
-      #     formatted_value = format(value, level: 3, max_width: 15)
-      #     formatted = "#{formatted_key} => #{formatted_value}"
-      #
-      #     joined = [joined, formatted].compact.join(', ')
-      #
-      #     return if joined.length > max_width - 4
-      #   end
-      #   joined = " #{joined} " if joined
-      #   ['{', joined, '}'].compact.join
-      # end
 
       def force_inline?
         level > 2

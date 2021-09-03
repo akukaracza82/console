@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    helium-console (0.1.10)
+    helium-console (0.1.11)
       colorize
       pry
 

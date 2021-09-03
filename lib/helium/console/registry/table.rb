@@ -4,25 +4,23 @@ module Helium
   class Console
     define_formatter_for Table do
       def call
-        [
-          *formatted_values,
-          truncation
-        ].compact.join("\n")
+        yield_lines do |y|
+          rows.each do |key, value, options = {}|
+            format_pair(key, value, **options) do |line|
+              y << line
+            end
+          end
+          y << truncation if truncation
+        end
       end
 
       private
 
-      def formatted_values
-        rows.flat_map do |key, value, options = {}|
-          format_pair(key, value, **options)
-        end
-      end
-
       def format_pair(key, value, **options)
         formatted_value = format_nested(value, max_width: max_value_width, **options)
 
-        formatted_value.lines.map.with_index do |line, index|
-          [
+        formatted_value.lines.each.with_index.map do |line, index|
+          yield [
             object.runner,
             text_or_blank(rjust(format_key(key), key_width), blank: index > 0),
             text_or_blank(object.after_key, blank: index > 0),
@@ -59,7 +57,7 @@ module Helium
 
       def rows
         @rows ||= case level
-          when 1 then rows_limited_by(42)
+          when 1 then object.rows
           when 2 then rows_limited_by(10)
           else rows_limited_by(3)
         end
@@ -74,7 +72,8 @@ module Helium
 
         [
           object.runner,
-          light_black("(#{object.rows.length - rows.length} more)")
+          light_black("(#{object.rows.length - rows.length} more)"),
+          "\n"
         ].join
       end
     end

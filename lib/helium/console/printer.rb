@@ -12,8 +12,11 @@ module Helium
 
       def pp(object)
         formatted = Helium::Console.format(object)
-        formatted = "\n#{formatted}" if formatted.lines.count > 1
-        output << formatted
+        output << "\n" if object.is_a? Registry::Element::LazyStringEvaluator
+        formatted.lines.each do |line|
+          output << "#{line.chomp}\n"
+        end
+        output << "\n"
       end
 
       ::Pry.config.print = method(:default)

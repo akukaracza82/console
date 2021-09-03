@@ -22,11 +22,11 @@ module Helium
           table.row(light_black("[#{index}]:"), element)
         end
 
-        [
-          '[',
-          format(table),
-          ']'
-        ].join("\n")
+        yield_lines do |y|
+          y << '['
+          format(table).lines.each { |line| y << line }
+          y << ']'
+        end
       end
 
       def inline_with_truncation

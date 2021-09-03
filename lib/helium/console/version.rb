@@ -2,6 +2,6 @@
 
 module Helium
   class Console
-    VERSION = '0.1.10'
+    VERSION = '0.1.11'
   end
 end
