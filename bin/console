@@ -7,4 +7,4 @@ require 'helium/console'
 require 'byebug'
 require 'ffaker'
 
-Pry.start
+Helium::Console.start

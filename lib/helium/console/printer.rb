@@ -13,13 +13,11 @@ module Helium
       def pp(object)
         formatted = Helium::Console.format(object)
         output << "\n" if object.is_a? Registry::Element::LazyStringEvaluator
-        formatted.lines.each do |line|
-          output << "#{line.chomp}\n"
+        formatted.lines.each.with_index do |line, index|
+          output << "\n" unless index.zero?
+          output << line.chomp
         end
-        output << "\n"
       end
-
-      ::Pry.config.print = method(:default)
     end
   end
 end

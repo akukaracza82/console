@@ -23,6 +23,33 @@ module Helium
       Symbol
     ].freeze
 
+    def self.start(target = nil, options = {})
+      prompt = "#{ColorizedString.new("He\u269B").light_blue}"
+      line = 0
+
+      options = {
+        print: ColorPrinter.method(:default),
+        prompt: Pry::Prompt.new(
+          'helium',
+          'helium prompt',
+          [
+            proc do |context, _nesting, _pry|
+              line += 1
+              str = [
+                ColorizedString.new("[#{line}]").light_black,
+                prompt,
+                ColorizedString.new("(#{context.inspect})").magenta
+              ].join(' ')
+              "#{str}> "
+            end,
+            proc { |*args| "2" }
+          ]
+        )
+      }.merge(options)
+
+      Pry.start(target, options)
+    end
+
     class << self
       def instance
         @instance ||= new(registry: Registry.new)

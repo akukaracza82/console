@@ -5,7 +5,7 @@ module Helium
     define_formatter_for String do
       def call
         formatted = Helium::Console.format_string(
-          object.dump.gsub('\n', "\n"),
+          object.dump.gsub('\n', "\n").gsub('\\u', '\u'),
           max_width: max_width,
           max_lines: max_lines,
           overflow: overflow,
