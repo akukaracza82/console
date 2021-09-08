@@ -100,7 +100,7 @@ module Helium
       {
         overflow: :wrap,
         indent: 0,
-        max_width: `tput cols`.chomp.to_i,
+        # max_width: `tput cols`.chomp.to_i,
         level: 1,
         ignore_objects: []
       }
@@ -108,7 +108,6 @@ module Helium
 
     def format_string(string, ellipses: '...', **options)
       options = default_options.merge(options)
-
       formatters = [
         Formatters::Overflow.get(options[:overflow]).new(max_width: options[:max_width] - options[:indent]),
         Formatters::Indent.new(options[:indent]),

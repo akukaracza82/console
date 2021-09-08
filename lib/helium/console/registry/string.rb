@@ -12,9 +12,12 @@ module Helium
           ellipses: '..."'
         )
 
-        formatted.lines
-          .map { |line| light_green(line) }
-          .join
+        result = formatted.lines
+          .map { |line| light_green(line.chomp) }
+          .join("\n")
+
+        result = "#{result}\n" if formatted.end_with?("\n")
+        result
       end
 
       def max_lines
