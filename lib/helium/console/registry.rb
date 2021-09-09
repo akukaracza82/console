@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'colorized_string'
+require 'helium/console/colorized_string'
 
 module Helium
   class Console
@@ -44,15 +44,20 @@ module Helium
           false
         end
 
+        ColorizedString.colors.each do |color|
+          define_method color do |string|
+            ColorizedString.new(string).colorize(color)
+          end
+        end
+
         def method_missing(name, *args)
           return @options[name] if @options.key?(name)
-          return ColorizedString.new(*args).colorize(name) if ColorizedString.colors.include?(name)
 
           super
         end
 
         def respond_to_missing?(name, private = false)
-          @options.key?(name) || ColorizedString.colors.include?(name) || super
+          @options.key?(name) || super
         end
 
         private
@@ -69,7 +74,7 @@ module Helium
         end
 
         def length_of(string)
-          ColorizedString.new(string).uncolorize.length
+          ColorizedString.new(string).length
         end
 
         def yield_lines(&block)
