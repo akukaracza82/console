@@ -8,6 +8,12 @@ module Helium
       def length
         uncolorize.to_s.length
       end
+
+      def colorize(*)
+        return self unless Pry.color
+
+        super
+      end
     end
   end
 end
