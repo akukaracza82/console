@@ -1,7 +1,9 @@
 # Helium::Console
 
 It is really tricky to display data in the console in the readable and consistent way. Many objects needs to display other objects, which might break their own formatting.
-Helium:Console is to make it easier by formatting strings in accordance to current console size.
+Helium:Console is an attempt to make your development console more readable by:
+* limiting displayed nesting levels (currently set to 3 level of nesting)
+* using nested table layout
 
 ## Installation
 
@@ -21,24 +23,73 @@ Or install it yourself as:
 
 ## Usage
 
-Helium::Console helps you to format any string in such a way that it displays nicely in the console:
+You can start helium console same way as you would start Pry:
 
+``` ruby
+require 'helium/console'
+Helium::Console.start!
+```    
+
+### Custom formatters
+
+Helium::Console hooks into pry and brings a number of default formatters. Unlike IRB and Pry, it does not use object's methods for display
+(so no `inspect` nor `pretty_print`) and replaces them by the collection of inheritable formatters objects stored in its registry.
+
+Formatter can be any object that conforms to the following interface:
+* `initialize(object_to_format, console_instance, **options)`
+* `call` method returning any object responding to `lines` (e.g. `String` )
+
+Formatter bellow will simply return a result of `inspect` call on the object:
+
+```ruby
+class InspectFormatter
+  def initialize(object, _console, **)
+    @object = object
+  end
+  
+  def call
+    @object.inspect
+  end
+end
 ```
-string = "- Hello there!\nGeneral Kenobi"
-Helium::Console.format(string, indent: 2)
-=> "  - Hello there!\n  General Kenobi"
+
+You can register your formatter in console registry with:
+
+```ruby
+Helium::Console.register(Kernel, InspectFormatter)
 ```
 
-When executed in a non-console environment `format` simply returns the string.
+The call above makes `InspectFormatter` available for all the objects that derives from Kernel module.
 
-Supported formattign options:
+To make formatting easier, you can subclass your formatter from `Helium::Console::Registry::Element`. By doing so, the following methods will be available to you inside your formatter class:
+* `object`, `console` and `options` readers
+* `format(other_object, **options)` - formats some other object **using the exact same options, including nesting level**.
+* `format_nested(other_object, **options)` - as above, but increases nesting level.
+* `format_string(string, **options)` - formats string by splitting it into lines of appropriate length and truncating (depending on nesting level).
+This is different to `format` and `format_nested` as it will not trigger `String` formatter (which by default adds quotes, escapes inner quotes and colors the result light green)
+* `red(string)`, `light_red(string)`, `yellow(string)`, etc - returns colorized string when `Pry.color` is set to true.
+* `length_of(string)` - utility option returning the length of displayed string, handling both colorized and non-colorized strings.
 
-* `indent` - specifies the amount of spaces added to each new line. Also accepts hash `{first:, other:}`. Defaults to 0.
-* `overflow` - specifies how to handle lines longer than console line width.
-  * `:wrap` - splits the long line into few lines and applies the required indent.
-  * `:wrap_words` - similar to wrap, but will try to avoid breaking the words.
-  * `:none` - does not modify long strings.
-* `max-lines` - specifies how many lines to display. Last line will be truncated with `...`. Defaults to `nil`
+### Displaying as a table
+
+To display object in a form of a table, format instance of `Helium::Console::Table`:
+
+```ruby
+class MyFormatter < Helium::Console::Registry::Element
+  def call
+    table = Helium::Console::Table.new(runner: '--@', after_key: '--@--', format_keys: false)
+    table.row magenta("property 1"), object.prop1
+    table.row magenta("property 2"), object.instance_variable_get(:@prop2)
+    
+    format table
+  end
+end
+```
+
+Table will automatically format all the right-hand values with an increased nesting level. By default, it will also format the left-hand keys, however this is controlled with `format_keys` option.
+
+Other options: `runner` is a string to be displayed at the beginning of each line, and `after_key` is a string to be injected between left and right values.
+
 
 ## Development
 

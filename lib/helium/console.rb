@@ -52,7 +52,7 @@ module Helium
 
     class << self
       def instance
-        @instance ||= new(registry: Registry.new)
+        @instance ||= new(registry: Registry.new(self))
       end
 
       def method_missing(name, *args, &block)
@@ -74,7 +74,7 @@ module Helium
       options = default_options.merge(options)
       return '(...)' if options[:ignore_objects].include?(object.object_id)
 
-      handler = registry.handler_for(object, **options)
+      handler = registry.handler_for(object, self, **options)
 
       if handler
         handler.()
@@ -100,9 +100,9 @@ module Helium
       {
         overflow: :wrap,
         indent: 0,
-        # max_width: `tput cols`.chomp.to_i,
         level: 1,
-        ignore_objects: []
+        ignore_objects: [],
+        short: false
       }
     end
 

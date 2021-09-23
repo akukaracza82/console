@@ -4,12 +4,17 @@ module Helium
   class Console
     define_formatter_for Object do
       def call
+        return short_format if short || object.instance_variables.none?
         return inline_with_truncation if force_inline?
 
         format_as_table
       end
 
       private
+
+      def short_format
+        "#{format object.class, short: true}#{yellow "##{object.object_id.to_s}"}"
+      end
 
       def format_as_table
         table = Table.new(runner: light_black('| '), after_key: light_black(': '), format_keys: false)

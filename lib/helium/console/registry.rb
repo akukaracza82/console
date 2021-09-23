@@ -18,26 +18,27 @@ module Helium
           end
         end
 
-        def initialize(object, **options)
+        def initialize(object, console, **options)
           @object = object
           @options = options
+          @console = console
         end
 
         def call
         end
 
-        attr_reader :object, :options
+        attr_reader :object, :options, :console
 
         def format_nested(other_object, **options)
-          Helium::Console.format(other_object, **nested_opts(options))
+          console.format(other_object, **nested_opts(options))
         end
 
         def format(other_object, **options)
-          Helium::Console.format(other_object, **nested_opts(options, increase_level: false))
+          console.format(other_object, **nested_opts(options, increase_level: false))
         end
 
         def format_string(string, **options)
-          Helium::Console.format_string(string, **options)
+          console.format_string(string, **options)
         end
 
         def simple?
@@ -82,6 +83,10 @@ module Helium
         end
       end
 
+      def initialize(console)
+        @console = console
+      end
+
       def add(klass, &handler)
         define(klass) do
           define_method(:call, &handler)
@@ -92,14 +97,14 @@ module Helium
         handlers[klass] = Class.new(Element, &block)
       end
 
-      def handler_for(object, **options)
+      def handler_for(object, console, **options)
         element_class = object.class.ancestors.find do |ancestor|
           break handlers[ancestor] if handlers.key?(ancestor)
           break handlers[ancestor.name] if handlers.key?(ancestor.name)
         end
         return unless element_class
 
-        element_class.new(object, **options)
+        element_class.new(object, console, **options)
       end
 
       private
