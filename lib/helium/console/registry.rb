@@ -97,7 +97,7 @@ module Helium
         handlers[klass] = Class.new(Element, &block)
       end
 
-      def handler_for(object, console, **options)
+      def handler_for(object, **options)
         element_class = object.class.ancestors.find do |ancestor|
           break handlers[ancestor] if handlers.key?(ancestor)
           break handlers[ancestor.name] if handlers.key?(ancestor.name)
@@ -108,6 +108,8 @@ module Helium
       end
 
       private
+
+      attr_reader :console
 
       def handlers
         @handlers ||= {}

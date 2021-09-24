@@ -74,7 +74,7 @@ module Helium
       options = default_options.merge(options)
       return '(...)' if options[:ignore_objects].include?(object.object_id)
 
-      handler = registry.handler_for(object, self, **options)
+      handler = registry.handler_for(object, **options)
 
       if handler
         handler.()
@@ -93,7 +93,7 @@ module Helium
 
     def simple?(object)
       SIMPLE_OBJECTS.any? { |simple_obj_class| object.is_a? simple_obj_class } ||
-        registry.handler_for(object, self).simple?
+        registry.handler_for(object).simple?
     end
 
     def default_options

@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.describe Helium::Console::Registry do
-  subject(:registry) { described_class.new }
+  subject(:registry) { described_class.new(console) }
 
   let(:test_class) { Class.new }
   let(:object) { test_class.new }
+  let(:console) { instance_double Helium::Console }
   let(:options) { { option_key: FFaker::Lorem.sentence } }
 
   before do
+    option_key = options[:option_key]
     registry.add(test_class) { option_key }
   end
 
