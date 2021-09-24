@@ -29,7 +29,7 @@ module Helium
       def inline_with_truncation
         truncated = formatted_inline_elements.with_index.inject([]) do |collected, (formatted, index)|
           new_collected = [*collected[0..-2], formatted, trunc_text(index + 1)].compact
-          break collected if new_collected.join(', ').length > max_width - 4
+          break collected if length_of(new_collected.join(', ')) > max_width - 4
 
           new_collected
         end
@@ -81,6 +81,8 @@ module Helium
 
       def trunc_text(count)
         truncated_elements = total_elements - count
+        return if truncated_elements.zero?
+
         light_black("(#{truncated_elements} #{count.zero? ? 'elements' : 'more'})")
       end
 

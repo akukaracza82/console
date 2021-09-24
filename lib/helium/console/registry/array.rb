@@ -65,7 +65,7 @@ module Helium
       def trunc_message(count, all_truncated: false)
         return if count < 1
 
-        "(#{count} #{all_truncated ? 'elements' : 'more'})"
+        light_black "(#{count} #{all_truncated ? 'elements' : 'more'})"
       end
 
       def object_size
