@@ -3,13 +3,13 @@
 module Helium
   class Console
     define_formatter_for TrueClass do
-      def call
+      def render_compact
         green('true')
       end
     end
 
     define_formatter_for FalseClass do
-      def call
+      def render_compact
         red('false')
       end
     end

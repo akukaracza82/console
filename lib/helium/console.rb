@@ -52,7 +52,7 @@ module Helium
 
     class << self
       def instance
-        @instance ||= new(registry: Registry.new(self))
+        @instance ||= new
       end
 
       def method_missing(name, *args, &block)
@@ -66,15 +66,15 @@ module Helium
       end
     end
 
-    def initialize(registry:)
-      @registry = registry
+    def initialize
+      @registry = Registry.new(self)
     end
 
-    def format(object, **options)
+    def format(object, style = nil, **options)
       options = default_options.merge(options)
       return '(...)' if options[:ignore_objects].include?(object.object_id)
 
-      handler = registry.handler_for(object, **options)
+      handler = registry.handler_for(object, style, **options)
 
       if handler
         handler.()
@@ -91,9 +91,9 @@ module Helium
       registry.define(klass, &handler)
     end
 
-    def simple?(object)
+    def simple?(object, style = nil, **options)
       SIMPLE_OBJECTS.any? { |simple_obj_class| object.is_a? simple_obj_class } ||
-        registry.handler_for(object).simple?
+        registry.handler_for(object, style, **options).simple?
     end
 
     def default_options

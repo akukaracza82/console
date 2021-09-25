@@ -6,6 +6,12 @@ module Helium
   class Console
     class Registry
       class Element
+        DEFAULT_STYLES = {
+          1 => [:full, {}],
+          2 => [:partial, {}],
+          3 => [:partial, { max_lines: 1 }]
+        }.freeze
+
         class LazyStringEvaluator
           def initialize(&block)
             @lines = Enumerator.new { |y| block.(y) }
@@ -18,27 +24,54 @@ module Helium
           end
         end
 
-        def initialize(object, console, **options)
+        def initialize(object, style, console, **options)
           @object = object
           @options = options
+          @style = style
           @console = console
         end
 
         def call
+          method_name = [:render, @style].compact.join('_')
+          public_send(method_name)
         end
 
-        attr_reader :object, :options, :console
-
-        def format_nested(other_object, **options)
-          console.format(other_object, **nested_opts(options))
+        def optimal_format
+          DEFAULT_STYLES.fetch(level) { [:compact, {}] }
         end
 
-        def format(other_object, **options)
-          console.format(other_object, **nested_opts(options, increase_level: false))
+        def render
+          format(object, *optimal_format)
+        end
+
+        def render_full
+          render_partial
+        end
+
+        def render_partial
+          format_string(render_inline, max_width: max_width, indent: indent)
+        end
+
+        def render_inline
+          render_compact
+        end
+
+        def render_compact
+          raise NotImplementedError
+        end
+
+        attr_reader :object, :options
+
+        def format_nested(other_object, style = nil, **options)
+          @console.format(other_object, style, **nested_opts(options))
+        end
+
+        def format(other_object, style = nil, **options)
+          @console.format(other_object, style, **nested_opts(options, increase_level: false))
         end
 
         def format_string(string, **options)
-          console.format_string(string, **options)
+          @console.format_string(string, **options)
         end
 
         def simple?
@@ -97,14 +130,14 @@ module Helium
         handlers[klass] = Class.new(Element, &block)
       end
 
-      def handler_for(object, **options)
+      def handler_for(object, style, **options)
         element_class = object.class.ancestors.find do |ancestor|
           break handlers[ancestor] if handlers.key?(ancestor)
           break handlers[ancestor.name] if handlers.key?(ancestor.name)
         end
         return unless element_class
 
-        element_class.new(object, console, **options)
+        element_class.new(object, style, console, **options)
       end
 
       private

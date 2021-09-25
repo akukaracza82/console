@@ -3,19 +3,28 @@
 module Helium
   class Console
     define_formatter_for Method do
-      def call
-        as_table
+      def render_full
+        as_table(source: true)
+      end
+
+      def render_partial
+        as_table(source: false)
+      end
+
+      def render_compact
+        "#{yellow 'method'} #{title}"
       end
 
       private
 
-      def as_table
+      def as_table(source:)
         table = Table.new(runner: light_black('| '), format_keys: false, after_key: light_black(': '))
         table.row(magenta('receiver'), object.receiver)
         table.row(magenta('location'), object.source_location)
+        table.row(magenta('source'), object.source, :full) if source
 
         yield_lines do |y|
-          y << "#{light_black '#'} #{yellow 'method'} #{title}"
+          y << "#{light_black '#'} #{render_compact}"
           format(table).lines.each { |line| y << line }
         end
       end

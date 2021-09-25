@@ -3,9 +3,15 @@
 module Helium
   class Console
     define_formatter_for Set do
-      def call
+      def render_compact
+        return rendr_empty if object.none?
+
+        "#{light_magenta('Set:')} #{trunc_message(object.count, all_truncated: true)}"
+      end
+
+      def render_partial
         return "#{light_magenta('Set:')} #{red 'empty'}" if object.none?
-        return inline_with_truncation if force_inline?
+        return inline_with_truncation if options[:max_lines] == 1
 
         inline_without_truncation || format_as_table
       end
@@ -16,17 +22,21 @@ module Helium
 
       private
 
+      def render_empty
+        "#{light_magenta('Set:')} #{red 'empty'}" if object.none?
+      end
+
       def format_as_table
         table = Table.new(runner: '', format_keys: false)
         object.each do |element|
-          table.row(light_magenta('-'), element)
+          table.row(light_black('-'), element)
         end
 
-        [
-          light_magenta('Set: {'),
-          format(table),
-          light_magenta('}')
-        ].join("\n")
+        yield_lines do |y|
+          y << light_magenta('Set: {')
+          format(table).lines.each { |line| y << line }
+          y << light_magenta('}')
+        end
       end
 
       def inline_with_truncation
@@ -59,7 +69,8 @@ module Helium
       end
 
       def formatted_elements(**options)
-        object.sort.each.lazy.map { |element| format_nested(element, **options) }
+        sorted = object.sort rescue object
+        sorted.each.lazy.map { |element| format_nested(element, **options) }
       end
 
       def trunc_message(count, all_truncated: false)
@@ -70,10 +81,6 @@ module Helium
 
       def object_size
         @object_size ||= object.size
-      end
-
-      def force_inline?
-        level > 2
       end
     end
   end

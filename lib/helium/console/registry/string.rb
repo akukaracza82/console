@@ -3,13 +3,34 @@
 module Helium
   class Console
     define_formatter_for String do
-      def call
-        formatted = Helium::Console.format_string(
-          "\"#{object.gsub('"', '\"')}\"",
+      def render_compact
+        render_string(object, max_width: 15, max_lines: 1)
+      end
+
+      def render_inline
+        render_string(object.gsub("\n", '\n'), max_lines: 1)
+      end
+
+      def render_partial
+        render_string(object, max_lines: max_lines || 3)
+      end
+
+      def render_full
+        render_string(object)
+      end
+
+      def simple?
+        object.lines.count == 1 && length_of(object) < 15
+      end
+
+      def render_string(string, max_lines: self.max_lines, max_width: self.max_width)
+        formatted = format_string(
+          "\"#{string.gsub('"', '\"')}\"",
           max_width: max_width,
           max_lines: max_lines,
           overflow: overflow,
-          ellipses: '..."'
+          ellipses: '..."',
+          indent: indent
         )
 
         result = formatted.lines
@@ -21,11 +42,7 @@ module Helium
       end
 
       def max_lines
-        case level
-          when 1 then nil
-          when 2 then 3
-          else 1
-        end
+        @options[:max_lines]
       end
     end
   end

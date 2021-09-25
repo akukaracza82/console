@@ -3,7 +3,7 @@
 module Helium
   class Console
     define_formatter_for Symbol do
-      def call
+      def render_compact
         light_blue(":#{object}")
       end
     end

@@ -3,33 +3,17 @@
 module Helium
   class Console
     define_formatter_for Object do
-      def call
-        return short_format if short || object.instance_variables.none?
-        return inline_with_truncation if force_inline?
+      def optimal_format
+        return [:compact, {}] if object.instance_variables.none?
 
-        format_as_table
+        super
       end
 
-      private
-
-      def short_format
-        "#{format object.class, short: true}#{yellow "##{object.object_id.to_s}"}"
+      def render_compact
+        "#{format object.class, :compact}#{light_black "##{object.object_id}"}"
       end
 
-      def format_as_table
-        table = Table.new(runner: light_black('| '), after_key: light_black(': '), format_keys: false)
-
-        object.instance_variables.each do |inst|
-          table.row(magenta(inst.to_s), object.instance_variable_get(inst))
-        end
-
-        yield_lines do |y|
-          y << "#{light_black '#'} #{class_name}"
-          format(table).lines.each {|line| y << line }
-        end
-      end
-
-      def inline_with_truncation
+      def render_inline
         class_name = class_name(short: true)
 
         vars = formatted_instance_variables(max_width: 15, max_lines: 1).inject([]) do |collected, element|
@@ -43,13 +27,21 @@ module Helium
         [class_name, formatted_vars].compact.join
       end
 
-      def force_inline?
-        level > 2
+
+      def render_partial
+        table = Table.new(runner: light_black('| '), after_key: light_black(': '), format_keys: false)
+
+        object.instance_variables.each do |inst|
+          table.row(magenta(inst.to_s), object.instance_variable_get(inst))
+        end
+
+        yield_lines do |y|
+          y << "#{light_black '#'} #{class_name}"
+          format(table).lines.each { |line| y << line }
+        end
       end
 
-      def all_symbol?
-        object.keys.all? { |key| key.is_a? Symbol }
-      end
+      private
 
       def formatted_instance_variables(**options)
         object.instance_variables.sort.each.lazy.map do |var_name|
@@ -59,7 +51,7 @@ module Helium
       end
 
       def class_name(short: false)
-        formatted = format(object.class, short: short)
+        formatted = format(object.class, :compact)
         short ? "##{formatted}" : "#{formatted} instance"
       end
     end

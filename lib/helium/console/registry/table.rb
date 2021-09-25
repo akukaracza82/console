@@ -5,8 +5,8 @@ module Helium
     define_formatter_for Table do
       def call
         yield_lines do |y|
-          rows.each do |key, value, options = {}|
-            format_pair(key, value, **options) do |line|
+          rows.each do |key, value, style, options = {}|
+            format_pair(key, value, style, **options) do |line|
               y << line
             end
           end
@@ -16,8 +16,8 @@ module Helium
 
       private
 
-      def format_pair(key, value, **options)
-        formatted_value = format_nested(value, max_width: max_value_width, **options)
+      def format_pair(key, value, style, **options)
+        formatted_value = format_nested(value, style, max_width: max_value_width, **options)
 
         formatted_value.lines.each.with_index.map do |line, index|
           yield [

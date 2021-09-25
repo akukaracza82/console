@@ -3,8 +3,8 @@
 module Helium
   class Console
     define_formatter_for 'Pathname' do
-      def call
-        "#{format(Pathname, short: true)}: #{yellow(object.to_s)}"
+      def render_compact
+        "#{format(Pathname, :compact)}: #{yellow(object.to_s)}"
       end
     end
   end

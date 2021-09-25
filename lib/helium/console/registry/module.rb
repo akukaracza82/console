@@ -3,7 +3,7 @@
 module Helium
   class Console
     define_formatter_for Module do
-      def call
+      def render_compact
         light_yellow(object.name || singleton_name || anonymous_text)
       end
 
@@ -24,7 +24,7 @@ module Helium
         return unless object.is_a?(Class) && object.singleton_class?
 
         owner = ObjectSpace.each_object(object).first
-        "singleton class of #{format owner, short: true, max_length: 20}"
+        "singleton class of #{format owner, :compact}"
       end
     end
   end
