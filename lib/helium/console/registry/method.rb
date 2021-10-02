@@ -20,8 +20,8 @@ module Helium
       def as_table(source:)
         table = Table.new(runner: light_black('| '), format_keys: false, after_key: light_black(': '))
         table.row(magenta('receiver'), object.receiver)
-        table.row(magenta('location'), object.source_location)
-        table.row(magenta('source'), object.source, :full) if source
+        table.row(magenta('location'), object.source_location&.join(':'))
+        table.row(magenta('source'), trimmed_source, :full) if source && object.source_location
 
         yield_lines do |y|
           y << "#{light_black '#'} #{render_compact}"
@@ -42,6 +42,11 @@ module Helium
         formatted_owner = "(#{formatted_owner})" unless owner.is_a? Module
 
         "#{formatted_owner}#{yellow(singleton ? '.' : '#')}#{yellow object.name.to_s}"
+      end
+
+      def trimmed_source
+        indent = object.source.lines.map { |line| line =~ /[^ ]/ }.min
+        object.source.lines.map { |line| line[indent..-1] }.join.chomp
       end
     end
   end

@@ -4,27 +4,32 @@ module Helium
   class Console
     define_class_formatter_for BasicObject do
       def render_compact
-        light_yellow(object.name || singleton_name || anonymous_text)
+        class_name || singleton_name || anonymous_text
       end
 
       private
 
-      def anonymous_text
-        closest = (object.ancestors.grep(Class) - [Object, BasicObject]).find(&:name)&.name
-
-        signature = if closest
-          "subclass of #{closest}"
-        else
-          object.class.name.downcase
-        end
-        "(anonymous #{signature})"
+      def class_name
+        light_yellow(object.name) if object.name
       end
 
       def singleton_name
         return unless object.is_a?(Class) && object.singleton_class?
 
         owner = ObjectSpace.each_object(object).first
-        "singleton class of #{format owner, :compact}"
+        "#{light_yellow 'singleton class of'} #{format owner, :compact}"
+      end
+
+      def anonymous_text
+        closest = (object.ancestors.grep(Class) - [Object, BasicObject]).find(&:name)&.name
+
+        signature = if closest
+          "#{light_yellow 'subclass of'} #{format closest, :compact}"
+        else
+          light_yellow(object.class.name.downcase)
+        end
+
+        "#{light_yellow '('}#{signature})#{light_yellow ')'}"
       end
     end
   end
