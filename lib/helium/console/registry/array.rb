@@ -3,11 +3,21 @@
 module Helium
   class Console
     define_formatter_for Array do
-      def call
+      def render_compact
+        return '[]' unless object.any?
+
+        "##{format object.class, :compact}#{light_black "[#{object.size}]"}"
+      end
+
+      def render_partial
         return '[]' if object.none?
         return inline_with_truncation if force_inline?
 
         inline_without_truncation || format_as_table
+      end
+
+      def render_inline
+        inline_with_truncation
       end
 
       def simple?
@@ -32,7 +42,7 @@ module Helium
       def inline_with_truncation
         formatted = formatted_elements.with_index.inject([]) do |joined, (element, index)|
           new_joined = [*joined[0..-2], element, trunc_message(object_size - index - 1, all_truncated: index.zero?)]
-          break joined if too_long?(new_joined, max_width: max_width - 4)
+          break joined if max_width && too_long?(new_joined, max_width: max_width - 4)
 
           new_joined
         end

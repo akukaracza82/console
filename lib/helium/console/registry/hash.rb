@@ -3,7 +3,13 @@
 module Helium
   class Console
     define_formatter_for Hash do
-      def call
+      def render_compact
+        return "{}" unless object.any?
+
+        "##{format object.class, :compact}#{light_black "[#{object.size}]"}"
+      end
+
+      def render_partial
         return '{}' if object.none?
         return inline_with_truncation if force_inline?
 
