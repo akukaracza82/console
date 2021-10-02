@@ -24,7 +24,7 @@ module Helium
     ].freeze
 
     def self.start(target = nil, options = {})
-      prompt = "#{ColorizedString.new("He\u269B").light_blue}"
+      prompt = ColorizedString.new("He\u269B").light_blue
       line = 0
 
       options = {
@@ -50,6 +50,15 @@ module Helium
       Pry.start(target, options)
     end
 
+    def self.define_formatter_for(klass, &handler)
+      Registry.instance_formatters.define(klass, &handler)
+    end
+
+    def self.define_class_formatter_for(klass, &handler)
+      Registry.class_formatters.define(klass, &handler)
+    end
+
+
     class << self
       def instance
         @instance ||= new
@@ -66,34 +75,16 @@ module Helium
       end
     end
 
-    def initialize
-      @registry = Registry.new(self)
-    end
-
     def format(object, style = nil, **options)
       options = default_options.merge(options)
       return '(...)' if options[:ignore_objects].include?(object.object_id)
 
-      handler = registry.handler_for(object, style, **options)
-
-      if handler
-        handler.()
-      else
-        format(object.inspect, **options)
-      end
-    end
-
-    def register(klass, &handler)
-      registry.add(klass, &handler)
-    end
-
-    def define_formatter_for(klass, &handler)
-      registry.define(klass, &handler)
+      handler_for(object, style, **options).()
     end
 
     def simple?(object, style = nil, **options)
       SIMPLE_OBJECTS.any? { |simple_obj_class| object.is_a? simple_obj_class } ||
-        registry.handler_for(object, style, **options).simple?
+        handler_for(object, style, **options).simple?
     end
 
     def default_options
@@ -109,7 +100,6 @@ module Helium
     def format_string(string, ellipses: '...', **options)
       options = default_options.merge(options)
       formatters = [
-        Formatters::Overflow.get(options[:overflow]).new(max_width: options[:max_width] - options[:indent]),
         Formatters::Indent.new(options[:indent]),
         Formatters::MaxLines.new(
           max_lines: options[:max_lines],
@@ -117,6 +107,11 @@ module Helium
           ellipses: ellipses
         )
       ]
+      if options[:max_width]
+        formatters.unshift(
+          Formatters::Overflow.get(options[:overflow]).new(max_width: options[:max_width] - options[:indent]),
+        )
+      end
 
       formatters.inject(string) do |str, formatter|
         formatter.(str)
@@ -125,7 +120,15 @@ module Helium
 
     private
 
-    attr_reader :registry
+    # TODO: Injection instead of hard dependency!
+    def handler_for(object, style, **options)
+      formatter_class = if object.is_a? Module
+        Registry.class_formatters.handler_for(object)
+      else
+        Registry.instance_formatters.handler_for(object.class)
+      end
+      formatter_class&.new(object, style, self, **options)
+    end
   end
 end
 

@@ -12,7 +12,8 @@ module Helium
 
       def pp(object)
         formatted = Helium::Console.format(object, max_width: maxwidth)
-        start_new_line = formatted.is_a?(Registry::Element::LazyStringEvaluator)
+        start_new_line = formatted.is_a?(Formatter::LazyStringEvaluator)
+        byebug if !formatted
         start_new_line ||= formatted.lines.count > 1
         start_new_line ||= length_of(formatted.chomp) >= maxwidth - 2
         output << "\n" if start_new_line

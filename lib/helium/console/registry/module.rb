@@ -2,7 +2,7 @@
 
 module Helium
   class Console
-    define_formatter_for Module do
+    define_class_formatter_for BasicObject do
       def render_compact
         light_yellow(object.name || singleton_name || anonymous_text)
       end
