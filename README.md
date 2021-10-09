@@ -1,9 +1,13 @@
 # Helium::Console
 
+Readable console output for your ruby project!
+
 It is really tricky to display data in the console in the readable and consistent way. Many objects needs to display other objects, which might break their own formatting.
 Helium:Console is an attempt to make your development console more readable by:
-* limiting displayed nesting levels (currently set to 3 level of nesting)
+* limiting displayed nesting levels to 3
+* limiting data displayed for nested objects
 * using nested table layout
+* automatically dividing and wrapping long strings
 
 ## Installation
 
@@ -27,8 +31,8 @@ You can start helium console same way as you would start Pry:
 
 ``` ruby
 require 'helium/console'
-Helium::Console.start!
-```    
+Helium::Console.start
+```
 
 ### Custom formatters
 
@@ -36,7 +40,7 @@ Helium::Console hooks into pry and brings a number of default formatters. Unlike
 (so no `inspect` nor `pretty_print`) and replaces them by the collection of inheritable formatters objects stored in its registry.
 
 Formatter can be any object that conforms to the following interface:
-* `initialize(object_to_format, console_instance, **options)`
+* `initialize(object_to_format, format, console_instance, **options)`
 * `call` method returning any object responding to `lines` (e.g. `String` )
 
 Formatter bellow will simply return a result of `inspect` call on the object:
@@ -63,6 +67,7 @@ The call above makes `InspectFormatter` available for all the objects that deriv
 
 To make formatting easier, you can subclass your formatter from `Helium::Console::Registry::Element`. By doing so, the following methods will be available to you inside your formatter class:
 * `object`, `console` and `options` readers
+* default `call` implementation, delegating formatting to one
 * `format(other_object, **options)` - formats some other object **using the exact same options, including nesting level**.
 * `format_nested(other_object, **options)` - as above, but increases nesting level.
 * `format_string(string, **options)` - formats string by splitting it into lines of appropriate length and truncating (depending on nesting level).

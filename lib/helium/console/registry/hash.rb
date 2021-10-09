@@ -61,9 +61,10 @@ module Helium
       end
 
       def formatted_inline_elements
+        max_width = 15 unless level == 1
         object.each.lazy.map do |key, value|
-          formatted_key = format_key(key, max_lines: 1, nesting: 1, max_with: 15)
-          formatted_value = format_nested(value, max_lines: 1, nesting: 1, max_width: 15)
+          formatted_key = format_key(key, max_lines: 1, nesting: 1, max_with: max_width)
+          formatted_value = format_nested(value, max_lines: 1, nesting: 1, max_width: max_width)
           [formatted_key, after_key, formatted_value].join
         end
       end
