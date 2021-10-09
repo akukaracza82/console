@@ -10,6 +10,7 @@ require 'helium/console/table'
 require 'helium/console/registry'
 
 require 'helium/console/printer'
+require 'helium/console/prompt'
 
 module Helium
   class Console
@@ -29,22 +30,7 @@ module Helium
 
       options = {
         print: ColorPrinter.method(:default),
-        prompt: Pry::Prompt.new(
-          'helium',
-          'helium prompt',
-          [
-            proc do |context, _nesting, _pry|
-              line += 1
-              str = [
-                ColorizedString.new("[#{line}]").light_black,
-                prompt,
-                ColorizedString.new("(#{context.inspect})").magenta
-              ].join(' ')
-              "#{str}> "
-            end,
-            proc { |*args| "2" }
-          ]
-        )
+        prompt: Prompt.new.pry_prompt
       }.merge(options)
 
       Pry.start(target, options)
